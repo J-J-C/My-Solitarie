@@ -1,4 +1,4 @@
-package model;
+package resource;
 
 /**
  * Same as version 7. My last example.

@@ -3,8 +3,8 @@ package model;
 import java.util.HashMap;
 import java.util.Stack;
 
-import model.Card.Suit;
-
+import resource.Card;
+import resource.Card.Suit;
 /**
  * COMP 303 My own SolitaireGame
  * 
@@ -26,13 +26,15 @@ public class SuitStackManager {
 	// Stack<Card>[] manager = new Stack<Card>[4];
 	
 	// using a Hashtable to manage those stack
-	private HashMap<Suit,Stack<Card>> manager = new HashMap<>();
+	private final HashMap<Suit,Stack<Card>> manager = new HashMap<>();
+	private int score;
 	
 	/**
 	 * Constructor 
 	 */
 	public SuitStackManager(){
-		reset();
+		this.reset();
+		this.score = 0;
 	}
 	/**
 	 * @param aSuit
@@ -49,6 +51,7 @@ public class SuitStackManager {
 	 */
 	public Card pop(Suit pSuit){
 		assert !this.isEmpty(pSuit);
+		this.score--;
 		return this.manager.get(pSuit).pop();
 	}
 	
@@ -56,7 +59,9 @@ public class SuitStackManager {
 	 * @param pCard card to push
 	 */
 	public void push(Card pCard) {
-			this.manager.get(pCard.getSuit()).push(pCard);
+		this.manager.get(pCard.getSuit()).push(pCard);
+		this.score++;
+	
 	}
 	
 	/**
@@ -88,11 +93,10 @@ public class SuitStackManager {
 		}
 	}
 	
-	// unnecessary, the verifcation part should be checked at game Listener
-	class InvalidCardException extends Exception{
-		public InvalidCardException(String message){
-			super(message);
-		}
+	/**
+	 * 
+	 */
+	public int getScore(){
+		return this.score;
 	}
-	
 }
