@@ -41,10 +41,6 @@ public class Card
 		aSuit = pSuit;
 	}
 	
-	public Card(Card card) {
-		aRank = card.getRank();
-		aSuit = card.getSuit();
-	}
 
 	/**
 	 * @return The index in RANKS corresponding to the rank of the card.

@@ -1,26 +1,55 @@
 package resource;
 
-public class CardView {
+/**
+ * 
+ * @author JiajunChen
+ *
+ */
+public class CardView 
+{
 	
 	private Card aCard;
 	private boolean aVisible;
 	
-	public CardView(Card pCard){
+	/**
+	 * 
+	 * @param pCard the card
+	 */
+	public CardView(Card pCard)
+	{
 		this.aCard = pCard;
 		this.aVisible = false;
 	}
 	
-	
-	public void setVisible(boolean b){
-		this.aVisible = b;
+	/**
+	 * 
+	 * @param pVisible visible or not
+	 */
+	public void setVisible(boolean pVisible)
+	{
+		this.aVisible = pVisible;
 	}
 	
-	public Card getCard(){
+	/**
+	 * 
+	 * @return the card
+	 */
+	public Card getCard()
+	{
 		return this.aCard;
 	}
-	
-	public boolean isVisible(){
+	/**
+	 * 
+	 * @return visible or not
+	 */
+	public boolean isVisible()
+	{
 		return this.aVisible;
+	}
+	@Override
+	public String toString()
+	{
+		return this.aCard.toString();
 	}
 
 }

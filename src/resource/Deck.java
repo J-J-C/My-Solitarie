@@ -10,14 +10,19 @@ import java.util.Stack;
 
 public class Deck
 {
+	private static final CardFactory FACTORY = new CardFactory();
 	private final Stack<Card> aCards = new Stack<>();
 	// flyweight pattern
-	private static final CardFactory factory = new CardFactory();
 	
+	
+	/**
+	 * 1.
+	 */
 	public Deck(){}
 	
 	// There are different ways of doing this (left as an exercise).
-	public List<Card> getCards(){
+	public List<Card> getCards()
+	{
 		return Collections.unmodifiableList(aCards);
 		// return new Deck(pDeck);
 		// return new ArrayList<Card> (aCards);
@@ -25,28 +30,31 @@ public class Deck
 		
 	}
 	
-	public Deck( Deck pDeck ){
-		for( Card card : pDeck.aCards ){
-			aCards.add(new Card(card));
-		}
-	}
 	
-	// using the cardfactory to generate cards
-	public void shuffle(){
+	
+	/**
+	 *  using the cardfactory to generate cards.
+	 */
+	public void shuffle()
+	{
 		aCards.clear();
-		for( Suit suit : Suit.values() ){
-			for( Rank rank : Rank.values()){
-				aCards.push(factory.getCard(rank, suit));
+		for( Suit suit : Suit.values() )
+		{
+			for( Rank rank : Rank.values())
+			{
+				aCards.push(FACTORY.getCard(rank, suit));
 			}
 		}
 		Collections.shuffle(aCards);
 	}
 	
-	public boolean isEmpty(){
+	public boolean isEmpty()
+	{
 		return aCards.isEmpty();
 	}
 	
-	public Card draw(){
+	public Card draw()
+	{
 		return aCards.pop();
 	}
 }

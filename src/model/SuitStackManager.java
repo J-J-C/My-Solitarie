@@ -19,65 +19,75 @@ import resource.Card.Suit;
  * @author Jiajun Chen
  *
  */
-public class SuitStackManager {
+public class SuitStackManager 
+{
 	
 
 	// why this is a problem ????
 	// Stack<Card>[] manager = new Stack<Card>[4];
 	
 	// using a Hashtable to manage those stack
-	private final HashMap<Suit,Stack<Card>> manager = new HashMap<>();
-	private int score;
+	private final HashMap<Suit, Stack<Card>> aManager = new HashMap<>();
+	private int aScore;
 	
 	/**
-	 * Constructor 
+	 * Constructor.
 	 */
-	public SuitStackManager(){
+	public SuitStackManager()
+	{
 		this.reset();
-		this.score = 0;
+		this.aScore = 0;
 	}
 	/**
-	 * @param aSuit
+	 * @param pSuit the suit of the card
 	 * @return the top card in the corresponding suit stack 
 	 */
-	public Card peek (Suit pSuit){
+	public Card peek(Suit pSuit)
+	{
 		assert !this.isEmpty(pSuit);
-		return this.manager.get(pSuit).peek();
+		return this.aManager.get(pSuit).peek();
 	}
 	
 	/**
-	 * @param aSuit
+	 * @param pSuit the suit of the card
 	 * @return remove and return the top card in the corresponding suit stack
 	 */
-	public Card pop(Suit pSuit){
+	public Card pop(Suit pSuit)
+	{
 		assert !this.isEmpty(pSuit);
-		this.score--;
-		return this.manager.get(pSuit).pop();
+		this.aScore--;
+		return this.aManager.get(pSuit).pop();
 	}
 	
 	/**
 	 * @param pCard card to push
 	 */
-	public void push(Card pCard) {
-		this.manager.get(pCard.getSuit()).push(pCard);
-		this.score++;
+	public void push(Card pCard) 
+	{
+		this.aManager.get(pCard.getSuit()).push(pCard);
+		this.aScore++;
 	
 	}
 	
 	/**
-	 * @param pSuit
+	 * @param pSuit suit of the card
 	 * @return if current suit stack is empty
 	 */
-	public boolean isEmpty(Suit pSuit){
-		return manager.get(pSuit).isEmpty();
+	public boolean isEmpty(Suit pSuit)
+	{
+		return aManager.get(pSuit).isEmpty();
 	}
 	
 	/**
 	 * @return if all suit stack is complete
 	 */
-	public boolean isCompelete(){
-		for(Stack<Card> suitstack : this.manager.values()){
-			if(suitstack.size() < 13){
+	public boolean isCompelete()
+	{	
+		final int number = 13;
+		for(Stack<Card> suitstack : this.aManager.values())
+		{
+			if(suitstack.size() < number)
+			{
 				return false;
 			}
 		}
@@ -85,18 +95,22 @@ public class SuitStackManager {
 	}
 	
 	/**
-	 * reset the whole stack when receiving reset instruction
+	 * clear the stack.
 	 */
-	public void reset(){
-		for(Suit suit : Suit.values()){
-			this.manager.put(suit, new Stack<Card>());
+	public void reset()
+	{
+		for(Suit suit : Suit.values())
+		{
+			this.aManager.put(suit, new Stack<Card>());
 		}
 	}
 	
 	/**
 	 * 
+	 * @return return the score
 	 */
-	public int getScore(){
-		return this.score;
+	public int getScore()
+	{
+		return this.aScore;
 	}
 }

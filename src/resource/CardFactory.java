@@ -4,17 +4,31 @@ package resource;
 import resource.Card.Rank;
 import resource.Card.Suit;
 
-public class CardFactory {
+/**
+ * 
+ * @author JiajunChen
+ *
+ */
+public class CardFactory 
+{
 	
-	private static final Card[][] cardSet = new Card[4][13];
+	private static final Card[][] CARDFACTORY = new Card[Suit.values().length][Rank.values().length];
 	
-	public Card getCard(Rank pRank, Suit pSuit){
+	/**
+	 * 
+	 * @param pRank rank of the card
+	 * @param pSuit suit of the card
+	 * @return the card
+	 */
+	public Card getCard(Rank pRank, Suit pSuit)
+	{
 		int rankIndex = pRank.ordinal();
 		int suitIndex = pSuit.ordinal();
-		if(cardSet[suitIndex][rankIndex] == null){
-			cardSet[suitIndex][rankIndex] = new Card(pRank, pSuit);
+		if(CARDFACTORY[suitIndex][rankIndex] == null)
+		{
+			CARDFACTORY[suitIndex][rankIndex] = new Card(pRank, pSuit);
 		}
-		return cardSet[suitIndex][rankIndex];
+		return CARDFACTORY[suitIndex][rankIndex];
 	}
 
 }
