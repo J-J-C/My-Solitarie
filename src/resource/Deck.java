@@ -8,6 +8,11 @@ import resource.Card.Suit;
 import java.util.List;
 import java.util.Stack;
 
+/**
+ * 
+ * @author JiajunChen
+ *
+ */
 public class Deck
 {
 	private static final CardFactory FACTORY = new CardFactory();
@@ -18,9 +23,21 @@ public class Deck
 	/**
 	 * 1.
 	 */
-	public Deck(){}
+	public Deck(){
+		for( Suit suit : Suit.values() )
+		{
+			for( Rank rank : Rank.values())
+			{
+				aCards.push(FACTORY.getCard(rank, suit));
+			}
+		}
+	}
 	
 	// There are different ways of doing this (left as an exercise).
+	/**
+	 * 
+	 * @return a copy of deck
+	 */
 	public List<Card> getCards()
 	{
 		return Collections.unmodifiableList(aCards);
@@ -29,6 +46,7 @@ public class Deck
 		// return (List<Card>) aCards.clone();
 		
 	}
+	
 	
 	
 	
@@ -48,11 +66,19 @@ public class Deck
 		Collections.shuffle(aCards);
 	}
 	
+	/**
+	 * 
+	 * @return deck is empty or not
+	 */
 	public boolean isEmpty()
 	{
 		return aCards.isEmpty();
 	}
 	
+	/**
+	 * draw a card from the deck.
+	 * @return a card
+	 */
 	public Card draw()
 	{
 		return aCards.pop();

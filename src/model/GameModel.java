@@ -1,34 +1,41 @@
 package model;
 
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
+
+
 import java.util.Arrays;
 import java.util.Stack;
 
+import ca.mcgill.cs.stg.solitaire.model.Move;
+import ca.mcgill.cs.stg.solitaire.model.NullMove;
 import resource.Deck;
 import resource.Card;
 import resource.Card.Rank;
 import resource.Card.Suit;
-import resource.CardView;
-import model.GameModel.MoveInWorkStack;
-import model.GameModel.Strategy;
+//import resource.CardView;
 import model.WorkingStackManager.Index;
+
+import strategy.Strategy;
 
 /**
  * GameModel.
  * @author JiajunChen
  *
  */
+
+// in sigleton, only the instacne can be static 
 public final class GameModel 
 {
 	public static final GameModel ENGINE = new GameModel();
 	
-	private static final Deck CARDDECK = new Deck();
-	private static Stack<Card> discardPile = new Stack<Card>();
+	private final Deck aCardDeck = new Deck();
+	private Stack<Card> aDiscardPile = new Stack<Card>();
 	// private static Stack<Card> remainingPile = new Stack<Card>();
-	private static final SuitStackManager SUITSTACK = new SuitStackManager();
-	private static final WorkingStackManager WORKSTACK = new WorkingStackManager();
-	private static int state = 0;
+	private final SuitStackManager aSuitStack = new SuitStackManager();
+	private final WorkingStackManager aWorkStack = new WorkingStackManager();
+	private Strategy aStrategy = new DefaultStrategy();
+	private int aState = 0;
 
 	private GameModel(){}
 	
@@ -37,27 +44,20 @@ public final class GameModel
 	 */
 	public void reset()
 	{
-		CARDDECK.shuffle();
-		SUITSTACK.reset();
-		discardPile = new Stack<Card>();
-		// remainingPile = new Stack<Card>();
-		WORKSTACK.initialize(CARDDECK);
-//		while(!cardDeck.isEmpty()){
-//			remainingPile.push(cardDeck.draw());
-//		}
-		/*
-		 * if discardDeck is finalized
-		 * while(!discardDeck.isEmpty()){discardDeck.pop()}
-		 */	
+		aState = 0;
+		aCardDeck.shuffle();
+		aSuitStack.reset();
+		aDiscardPile = new Stack<Card>();
+		aWorkStack.initialize(aCardDeck);
 	}
 	
-	private static boolean canMoveToSuitStack(Card pCard, Suit pSuit)
+	private boolean canMoveToSuitStack(Card pCard, Suit pSuit)
 	{
-		if(SUITSTACK.isEmpty(pSuit))
+		if(aSuitStack.isEmpty(pSuit))
 		{
 			return pCard.getRank() == Rank.ACE;
 		}
-		Card fromSuit = SUITSTACK.peek(pSuit);
+		Card fromSuit = aSuitStack.peek(pSuit);
 		return pCard.getSuit() == fromSuit.getSuit() && pCard.getRank().ordinal() - fromSuit.getRank().ordinal() == 1;
 	}
 	/**
@@ -68,22 +68,22 @@ public final class GameModel
 	public void moveToSuitStack(Card pCard, Suit pSuit)
 	{
 		assert canMoveToSuitStack(pCard, pSuit);
-		SUITSTACK.push(pCard);
+		aSuitStack.push(pCard);
 	}
 	
-	private static boolean canMoveToWorkStack(Card pCard, Index pIndex)
+	private boolean canMoveToWorkStack(Card pCard, Index pIndex)
 	{
-		if(pCard.getRank() == Rank.KING && WORKSTACK.isEmpty(pIndex))
+		if(pCard.getRank() == Rank.KING && aWorkStack.isEmpty(pIndex))
 		{
 			return true;
 		}
-		else if(WORKSTACK.isEmpty(pIndex))
+		else if(aWorkStack.isEmpty(pIndex))
 		{
 			return false;
 		}
 		else
 		{
-			Card fromIndex = WORKSTACK.peek(pIndex);
+			Card fromIndex = aWorkStack.peek(pIndex);
 			return Math.abs(pCard.getSuit().ordinal()-fromIndex.getSuit().ordinal()) == 1 && 
 					pCard.getRank().ordinal() - fromIndex.getRank().ordinal() == -1;
 		}
@@ -98,7 +98,7 @@ public final class GameModel
 	public void moveToWorkStack(Card pCard, Index pIndex)
 	{
 		assert canMoveToWorkStack(pCard, pIndex);
-		WORKSTACK.push(pCard, pIndex);
+		aWorkStack.push(pCard, pIndex);
 	}
 	
 	/**
@@ -107,7 +107,8 @@ public final class GameModel
 	public void discard()
 	{
 		assert !isEmptyDeck();
-		discardPile.push(CARDDECK.draw());
+		aDiscardPile.push(aCardDeck.draw());
+		aState++;
 	}
 	
 	/** replenish the deck
@@ -119,9 +120,9 @@ public final class GameModel
 	/**
 	 * @return deck status
 	 */
-	public static boolean isEmptyDeck()
+	public boolean isEmptyDeck()
 	{
-		return CARDDECK.isEmpty();
+		return aCardDeck.isEmpty();
 	}
 	
 	/**
@@ -129,7 +130,7 @@ public final class GameModel
 	 */
 	public boolean isEmptyDiscardPile()
 	{
-		return discardPile.isEmpty();
+		return aDiscardPile.isEmpty();
 	}
 	
 	/**
@@ -140,7 +141,7 @@ public final class GameModel
 	public Card peekSuitStackCard(Suit pSuit)
 	{
 		
-		return SUITSTACK.peek(pSuit);
+		return aSuitStack.peek(pSuit);
 	}
 	/**
 	 * 
@@ -149,9 +150,14 @@ public final class GameModel
 	 */
 	public Card peekWorkStackCard(Index pIndex)
 	{
-		return WORKSTACK.peek(pIndex);
+		return aWorkStack.peek(pIndex);
 	}
 	
+	public Card popDiscardPile()
+	{
+		return aDiscardPile.pop();
+		
+	}
 	/**
 	 * 
 	 * @param pIndex index
@@ -159,7 +165,7 @@ public final class GameModel
 	 */
 	public int getNumberofVisible(Index pIndex)
 	{
-		return WORKSTACK.getVisibleCards(pIndex).size();
+		return aWorkStack.getVisibleCards(pIndex).size();
 	}
 	
 	
@@ -168,7 +174,7 @@ public final class GameModel
 	 */
 	public int getScore()
 	{
-		return SUITSTACK.getScore();
+		return aSuitStack.getScore();
 	}
 	
 	/**
@@ -186,9 +192,11 @@ public final class GameModel
 	 * autoplay game.
 	 * @param pStrategy 111
 	 */
-	public void autoPlay(Strategy pStrategy)
+	public boolean autoPlay()
 	{
-		state += pStrategy.makeMove();
+		Move move = aPlayingStrategy.computeNextMove(this);
+		move.perform(this);
+		return !(move instanceof NullMove);
 		
 	}
 	
@@ -197,31 +205,38 @@ public final class GameModel
 	 */
 	public int getState()
 	{
-		return state;
+		return aState;
 	}
-	
+	/**
+	 * 
+	 * @return card
+	 */
+	public Card peekDiscard()
+	{
+		return aDiscardPile.peek();
+	}
 	@Override
 	public String toString()
 	{
 		String string = "";
 		String workStack = "Working Stack Status";
-		String suitStack = "Suit Stack Status";
-		String discard = "Discard Pile Status";
+	//	String suitStack = "Suit Stack Status";
+	//	String discard = "Discard Pile Status";
 		
 		string = workStack +"\n";
 		String temp = "";
 		for(Index index: Index.values())
 		{
-			temp += Arrays.toString(WORKSTACK.getVisibleCards(index).toArray()) + "\n";
+			temp += Arrays.toString(aWorkStack.getVisibleCards(index).toArray()) + "\n";
 		}
 		String segment = "------------------------------------";
 		string = string+temp+segment+"\n";
-		String a = "suitstack status \n";
+		String a = "Suit Stack Status \n";
 		for(Suit suit:Suit.values())
 		{
-			if(!SUITSTACK.isEmpty(suit))
+			if(!aSuitStack.isEmpty(suit))
 			{
-				a += SUITSTACK.peek(suit).toString()+"  "+suit.toString()+"\n";
+				a += aSuitStack.peek(suit).toString()+"  "+suit.toString()+"\n";
 			}
 			else
 			{
@@ -229,26 +244,18 @@ public final class GameModel
 			}
 		}
 		
-		
-		return string + a + state;
+		String seal = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+		return seal+string + a + "cumlative moves " + aState + "\n"+ seal;
 	}
-	/**
-	 * refill.
-	 * @param pIndex Index...
-	 */
-	private void refill(Index pIndex)
-	{
-		if(WORKSTACK.getVisibleCards(pIndex).size()== 0 && !WORKSTACK.isEmpty(pIndex))
-		{
-			WORKSTACK.push(WORKSTACK.pop(pIndex), pIndex);
-		}
-	}
+
 	
 /**
  * Autoplay Strategy interface.
  * @author JiajunChen
  *
  */
+	
+	
 interface Strategy
 {
 	int makeMove();
@@ -266,13 +273,12 @@ class MoveInWorkStack implements Strategy
 		int isChanged = 0;
 		for(Index p1: Index.values())
 		{
-			ArrayList<CardView> cards = WORKSTACK.getVisibleCards(p1);
+			ArrayList<CardView> cards = aWorkStack.getVisibleCards(p1);
 			if(cards.size() == 0)
 			{
 				continue;
 			}
 			Card head1 = cards.get(0).getCard();
-			Card neck = (cards.size() > 1) ? cards.get(1).getCard() : null;
 			Card tail = null;
 			if(cards.size() > 1)
 			{
@@ -285,6 +291,8 @@ class MoveInWorkStack implements Strategy
 				{
 					continue;
 				}
+			if(head1 != null)
+			{
 				if(tail == null)
 				{
 					if(canMoveToWorkStack(head1, p2))
@@ -311,7 +319,7 @@ class MoveInWorkStack implements Strategy
 						}
 					}					
 				}
-			}			
+			}			}
 		
 		return isChanged;
 	}
@@ -331,7 +339,11 @@ class MoveToSuitStack implements Strategy
 		int isChanged = 0;
 		for(Index p1: Index.values())
 		{
-			Card candidate = !WORKSTACK.isEmpty(p1) ? WORKSTACK.peek(p1) : null;
+			Card candidate =  null;
+			if(!WORKSTACK.isEmpty(p1))
+			{
+				candidate = WORKSTACK.peek(p1);
+			}
 			if(candidate != null)
 			{
 				if(canMoveToSuitStack(candidate, candidate.getSuit()))
@@ -365,6 +377,14 @@ class FromPileToStack implements Strategy
 			return 0;
 		}
 		Card candidate = discardPile.peek();
+		
+		if(canMoveToSuitStack(candidate, candidate.getSuit()))
+			{
+				moveToSuitStack(candidate, candidate.getSuit());
+				return 1;
+			}
+		
+		
 		while(!discardPile.isEmpty() && hasChanged == 1)
 		{
 			hasChanged = 0;

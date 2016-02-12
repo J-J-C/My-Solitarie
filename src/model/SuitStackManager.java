@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import resource.Card;
 import resource.Card.Suit;
+import model.WorkingStackManager.Index;
 /**
  * COMP 303 My own SolitaireGame
  * 
@@ -27,7 +28,7 @@ public class SuitStackManager
 	// Stack<Card>[] manager = new Stack<Card>[4];
 	
 	// using a Hashtable to manage those stack
-	private final HashMap<Suit, Stack<Card>> aManager = new HashMap<>();
+	private final HashMap<Index, Stack<Card>> aManager = new HashMap<>();
 	private int aScore;
 	
 	/**
@@ -99,9 +100,13 @@ public class SuitStackManager
 	 */
 	public void reset()
 	{
-		for(Suit suit : Suit.values())
+		for(Index index : Index.values())
 		{
-			this.aManager.put(suit, new Stack<Card>());
+			if(index.equals(Index.FOUR))
+			{
+				break;
+			}
+			this.aManager.put(index, new Stack<Card>());
 		}
 	}
 	
@@ -111,6 +116,19 @@ public class SuitStackManager
 	 */
 	public int getScore()
 	{
-		return this.aScore;
+		int score = 0;
+		for(Index index:Index.values())
+		{
+			if(index.equals(Index.FOUR))
+			{
+				break;
+			}
+			while(!aManager.get(index).isEmpty())
+			{
+				aManager.get(index).pop();
+				score++;
+			}
+		}
+		return score;
 	}
 }

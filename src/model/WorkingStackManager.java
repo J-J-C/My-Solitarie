@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 
 import java.util.Stack;
@@ -51,23 +52,17 @@ public class WorkingStackManager
 	 */
 	public void initialize(Deck pDeck)
 	{
-		String a = "";
 		this.reset();
 		for(Index index : Index.values())
 		{
-			a += "Index: " + index + " [ ";
-			String b = "";
 			int temp = index.ordinal();
 			while(temp != -1)
 			{
 				workingManager.get(index).push(new CardView(pDeck.draw()));
-				b = workingManager.get(index).peek().getCard().toString() + ", " + b;
 				temp--;
 			}
 			workingManager.get(index).peek().setVisible(true);
-			a = a + b + "]\n";
 		}
-		System.out.println(a + "||||||||||||||||||||||||||");
 	}
 	
 	
@@ -151,7 +146,8 @@ public class WorkingStackManager
 		}
 		while(!temp.isEmpty())
 		{
-			workingManager.get(pIndex).push(temp.pop());
+			CardView aa = temp.pop();
+			workingManager.get(pIndex).push(aa);
 		}
 		return visibleCards;
 		

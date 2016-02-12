@@ -1,8 +1,9 @@
 package resource;
-
+import model.Immutable;
 /**
  * Same as version 7. My last example.
  */
+@Immutable(date = "2016-02-08", inspector = "Chen")
 public class Card
 {
 	/**
@@ -78,6 +79,19 @@ public class Card
 	public void setSuit(Suit pSuit)
 	{
 		aSuit = pSuit;
+	}
+	
+	@Override
+	public boolean equals(Object pCard)
+	{
+		if(pCard == null) return false;
+		if(pCard == this) return true;
+		
+		if (pCard.getClass() != (this.getClass()))
+		{
+			return false;
+		}
+		return this.aRank == ((Card) pCard).getRank() && this.aSuit == ((Card) pCard).getSuit();
 	}
 	
 	@Override
