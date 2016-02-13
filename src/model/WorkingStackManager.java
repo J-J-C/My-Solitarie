@@ -2,14 +2,16 @@ package model;
 
 import java.util.ArrayList;
 
-import java.util.HashMap;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
 
 import resource.Card;
 import resource.CardView;
 import resource.Deck;
-
+import model.GameModel.Index;
+import model.GameModel.StackIndex;
 /**
  * 
  * @author JiajunChen
@@ -22,12 +24,8 @@ public class WorkingStackManager
 	 * @author JiajunChen
 	 *
 	 */
-	public enum Index 
-	{
-		ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX;
-	}
 	
-	private static HashMap<Index, Stack<CardView>> workingManager = new HashMap<>();
+	private static HashMap<StackIndex, Stack<CardView>> workingManager = new HashMap<>();
 	
 	
 	/**
@@ -41,7 +39,7 @@ public class WorkingStackManager
 	 */
 	private void reset()
 	{
-		for(Index index: Index.values())
+		for(StackIndex index: StackIndex.values())
 		{
 			workingManager.put(index, new Stack<CardView>());
 		}
@@ -53,7 +51,7 @@ public class WorkingStackManager
 	public void initialize(Deck pDeck)
 	{
 		this.reset();
-		for(Index index : Index.values())
+		for(StackIndex index : StackIndex.values())
 		{
 			int temp = index.ordinal();
 			while(temp != -1)
@@ -70,7 +68,7 @@ public class WorkingStackManager
 	 * @param pIndex index
 	 * @return the top card in the corresponding suit stack 
 	 */
-	public Card peek(Index pIndex)
+	public Card peek(StackIndex pIndex)
 	{
 		assert !this.isEmpty(pIndex);
 		return workingManager.get(pIndex).peek().getCard();
@@ -80,7 +78,7 @@ public class WorkingStackManager
 	 * @param pIndex index
 	 * @return remove and return the top card in the corresponding suit stack
 	 */
-	public Card pop(Index pIndex)
+	public Card pop(StackIndex pIndex)
 	{
 		assert !this.isEmpty(pIndex);
 		return workingManager.get(pIndex).pop().getCard();
@@ -90,19 +88,19 @@ public class WorkingStackManager
 	 * @param pCard card to push
 	 * @param pIndex destination
 	 */
-	public void push(Card pCard, Index pIndex) 
+	public void push(Card pCard, StackIndex pIndex) 
 	{
 		workingManager.get(pIndex).push(new CardView(pCard));
 		workingManager.get(pIndex).peek().setVisible(true);
 	}
 	
 	/**
-	 * @param pIndex destination
+	 * @param destination destination
 	 * @return if current suit stack is empty
 	 */
-	public boolean isEmpty(Index pIndex)
+	public boolean isEmpty(Index destination)
 	{
-		return workingManager.get(pIndex).isEmpty();
+		return workingManager.get(destination).isEmpty();
 	}
 	
 	/**
@@ -130,17 +128,17 @@ public class WorkingStackManager
 	 * @param pIndex a
 	 * @return List of visible card of the specific index stack
 	 */
-	public ArrayList<CardView> getVisibleCards(Index pIndex)
+	public List<Card> getVisibleCards(StackIndex pIndex)
 	{
 		Stack<CardView> target = workingManager.get(pIndex);
 		Stack<CardView> temp = new Stack<>();
-		ArrayList<CardView> visibleCards = new ArrayList<>();
+		ArrayList<Card> visibleCards = new ArrayList<>();
 		while(!target.isEmpty())
 		{
 			CardView card = target.pop();
 			if(card.isVisible())
 			{
-				visibleCards.add(card);
+				visibleCards.add(card.getCard());
 			}
 			temp.push(card);
 		}

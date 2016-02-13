@@ -5,6 +5,7 @@ import java.lang.reflect.*;
 import model.GameModel;
 import resource.Card;
 
+// tested. Worked
 public class DiscardMove implements Move 
 {
 	/**
@@ -13,7 +14,7 @@ public class DiscardMove implements Move
 	public DiscardMove()
 	{}
 	@Override
-	public void performe(GameModel pModel)
+	public void perform(GameModel pModel)
 	{
 		assert !pModel.isEmptyDeck();
 		pModel.discard();
@@ -23,18 +24,7 @@ public class DiscardMove implements Move
 	public void undo(GameModel pModel)
 	{
 		Card aCard = pModel.popDiscardPile();
-		try 
-		{
-			Field deck = pModel.getClass().getDeclaredField("aCardDeck").getClass().getField("aCards");
-			deck.setAccessible(true);
-			Method e = deck.getClass().getDeclaredMethod("push");
-			e.invoke(deck, aCard);
-		} 
-		catch (Exception e) 
-		{
-			System.out.println("Opps bug");
-		}
-	
+		pModel.push(aCard);
 	}
 
 }

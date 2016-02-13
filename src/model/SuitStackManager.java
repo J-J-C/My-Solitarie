@@ -1,11 +1,13 @@
 package model;
 
 import java.util.HashMap;
+
 import java.util.Stack;
 
 import resource.Card;
+import resource.Card.Rank;
 import resource.Card.Suit;
-import model.WorkingStackManager.Index;
+import model.GameModel.SuitStackIndex;
 /**
  * COMP 303 My own SolitaireGame
  * 
@@ -28,7 +30,7 @@ public class SuitStackManager
 	// Stack<Card>[] manager = new Stack<Card>[4];
 	
 	// using a Hashtable to manage those stack
-	private final HashMap<Index, Stack<Card>> aManager = new HashMap<>();
+	private final HashMap<SuitStackIndex, Stack<Card>> aManager = new HashMap<>();
 	private int aScore;
 	
 	/**
@@ -43,7 +45,7 @@ public class SuitStackManager
 	 * @param pSuit the suit of the card
 	 * @return the top card in the corresponding suit stack 
 	 */
-	public Card peek(Suit pSuit)
+	public Card peek(SuitStackIndex pSuit)
 	{
 		assert !this.isEmpty(pSuit);
 		return this.aManager.get(pSuit).peek();
@@ -53,7 +55,7 @@ public class SuitStackManager
 	 * @param pSuit the suit of the card
 	 * @return remove and return the top card in the corresponding suit stack
 	 */
-	public Card pop(Suit pSuit)
+	public Card pop(SuitStackIndex pSuit)
 	{
 		assert !this.isEmpty(pSuit);
 		this.aScore--;
@@ -74,7 +76,7 @@ public class SuitStackManager
 	 * @param pSuit suit of the card
 	 * @return if current suit stack is empty
 	 */
-	public boolean isEmpty(Suit pSuit)
+	public boolean isEmpty(SuitStackIndex pSuit)
 	{
 		return aManager.get(pSuit).isEmpty();
 	}
@@ -100,12 +102,8 @@ public class SuitStackManager
 	 */
 	public void reset()
 	{
-		for(Index index : Index.values())
+		for(SuitStackIndex index : SuitStackIndex.values())
 		{
-			if(index.equals(Index.FOUR))
-			{
-				break;
-			}
 			this.aManager.put(index, new Stack<Card>());
 		}
 	}
@@ -117,12 +115,8 @@ public class SuitStackManager
 	public int getScore()
 	{
 		int score = 0;
-		for(Index index:Index.values())
+		for(SuitStackIndex index: SuitStackIndex.values())
 		{
-			if(index.equals(Index.FOUR))
-			{
-				break;
-			}
 			while(!aManager.get(index).isEmpty())
 			{
 				aManager.get(index).pop();
@@ -131,4 +125,8 @@ public class SuitStackManager
 		}
 		return score;
 	}
+	
+	
+	
+	
 }

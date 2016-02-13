@@ -4,7 +4,7 @@ import model.GameModel;
 
 public interface Move {
 	
-	void performe(GameModel pModel);
+	void perform(GameModel pModel);
 	
 	void undo(GameModel pModel);
 }

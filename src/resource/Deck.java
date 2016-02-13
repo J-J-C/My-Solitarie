@@ -11,19 +11,17 @@ import java.util.Stack;
 /**
  * 
  * @author JiajunChen
- *
  */
+
 public class Deck
 {
 	private static final CardFactory FACTORY = new CardFactory();
-	private final Stack<Card> aCards = new Stack<>();
-	// flyweight pattern
-	
-	
+	private final Stack<Card> aCards = new Stack<>();	
 	/**
 	 * 1.
 	 */
-	public Deck(){
+	public Deck()
+	{
 		for( Suit suit : Suit.values() )
 		{
 			for( Rank rank : Rank.values())
@@ -83,4 +81,18 @@ public class Deck
 	{
 		return aCards.pop();
 	}
+	
+	public Card peek()
+	{
+		return aCards.peek();
+	}
+	
+	/**
+	 * @param input Card
+	 */
+	public void push(Card pCard)
+	{
+		this.aCards.push(FACTORY.getCard(pCard.getRank(), pCard.getSuit()));
+	}
+	
 }

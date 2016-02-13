@@ -1,33 +1,49 @@
 package move;
 
+
+
 import model.GameModel;
-import model.WorkingStackManager.Index;
+import model.GameModel.*;
+
+
 import resource.Card;
 
+/**
+ * Move inside the workStack
+ * @author JiajunChen
+ *
+ */
 public class WorkStackMove implements Move 
 {
-	private Card aCard;
-	private Index destination; 
+	private Card target;
+	private StackIndex destination; 
 	private Index origin;
 	
-	public WorkStackMove(Card pCard, Index pIndex){
-		this.aCard = pCard;
-		this.destination = pIndex;
-	}
-	
-	public void setOrigin(Index pIndex){
-		this.origin = pIndex;
+	public WorkStackMove(Card pCard, Index pOrigin, StackIndex pDestination)
+	{
+		this.target = pCard;
+		this.origin = pOrigin;
+		this.destination = pDestination;
 	}
 	
 	@Override
-	public void performe(GameModel pModel) {
-		assert pModel.
+	public void perform(GameModel pModel) 
+	{
+		assert pModel.canMoveToWorkStack(target, destination);
+		if(!origin.equals(CardSources.DISCARD_PILE)){
+			pModel.popCard(origin);
+		}else{
+			pModel.popDiscardPile();
+		}
+		pModel.moveToWorkStack(target, destination);
 	}
 
 	@Override
-	public void undo(GameModel pModel) {
-		// TODO Auto-generated method stub
-		
+	public void undo(GameModel pModel)
+	{
+		// pModel.moveToWorkStack(target, origin);
 	}
+
+
 
 }
