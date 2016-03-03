@@ -2,6 +2,7 @@ package model;
 
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.util.List;
@@ -34,8 +35,9 @@ public final class GameModel
 	// private static Stack<Card> remainingPile = new Stack<Card>();
 	private final SuitStackManager aSuitStack = new SuitStackManager();
 	private final WorkingStackManager aWorkStack = new WorkingStackManager();
-	private Strategy aStrategy = new DefaultStrategy();
+	//private Strategy aStrategy = new DefaultStrategy();
 	private Stack<Move> moveStack = new Stack<>();
+	private ArrayList<GameModelObserver> aListener = new ArrayList<>();
 	private int aState = 0;
 
 	private GameModel(){}
@@ -76,7 +78,7 @@ public final class GameModel
 		aSuitStack.reset();
 		aDiscardPile = new Stack<Card>();
 		aWorkStack.initialize(aCardDeck);
-		aStrategy = new DefaultStrategy();
+		//aStrategy = new DefaultStrategy();
 	}
 	
 	/**
@@ -86,7 +88,7 @@ public final class GameModel
 	 */
 	public void setStrategy(Strategy pStrategy)
 	{
-		this.aStrategy = pStrategy;
+		//this.aStrategy = pStrategy;
 	}
 	/**
 	 * check is a move to suit stack is valid or not
@@ -271,17 +273,24 @@ public final class GameModel
 	}
 	
 	/**
+	 * 
+	 */
+	public void addObserver(GameModelObserver pView){
+		this.aListener.add(pView);
+	}
+	
+	/**
 	 * autoplay game.
 	 * @param strategy 
 	 * @param pStrategy 111
 	 */
-	public boolean autoPlay()
-	{
-		Move move = aStrategy.computeNextMove(this);
-		move.perform(this);
-		moveStack.push(move);
-		return move.getClass().equals(NullMove.class);
-	}
+//	public boolean autoPlay()
+//	{
+//		Move move = aStrategy.computeNextMove(this);
+//		move.perform(this);
+//		moveStack.push(move);
+//		return move.getClass().equals(NullMove.class);
+//	}
 	
 	/**
 	 * Undo feature of the game
