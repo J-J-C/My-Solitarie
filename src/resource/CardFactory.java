@@ -20,7 +20,7 @@ public class CardFactory
 	 * @param pSuit suit of the card
 	 * @return the card
 	 */
-	public Card getCard(Rank pRank, Suit pSuit)
+	public static Card getCard(Rank pRank, Suit pSuit)
 	{
 		int rankIndex = pRank.ordinal();
 		int suitIndex = pSuit.ordinal();

@@ -13,8 +13,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import model.GameModel.StackIndex;
 import model.WorkingStackManager;
-import model.WorkingStackManager.Index;
 import resource.Card;
 import resource.Card.Rank;
 import resource.Card.Suit;
@@ -37,21 +37,20 @@ public class TestWorkStack
 	public void testTheBefore()
 	{
 		Card aCard = new Card(Rank.ACE, Suit.SPADES);
-		test.push(aCard, Index.ONE);
-		assertEquals(aCard, test.peek(Index.ONE));
-		assertEquals(aCard, test.pop(Index.ONE));
-		assertFalse(test.isEmpty(Index.FIVE));
-		test.pop(Index.ONE);
-		test.pop(Index.ONE);
-		assertTrue(test.isEmpty(Index.ONE));
+		test.push(aCard, StackIndex.FIRST);
+		assertEquals(aCard, test.peek(StackIndex.FIRST));
+		assertEquals(aCard, test.pop(StackIndex.FIRST));
+		assertFalse(test.isEmpty(StackIndex.FIFTH));
+		test.pop(StackIndex.FIRST);
+		assertTrue(test.isEmpty(StackIndex.FIRST));
 	}
 	
 	@Test (expected = EmptyStackException.class)
 	public void testForException()
 	{
-		test.pop(Index.ONE);
-		test.pop(Index.ONE);
-		test.pop(Index.ONE);
+		test.pop(StackIndex.FIRST);
+		test.pop(StackIndex.FIRST);
+		test.pop(StackIndex.FIRST);
 	}
 	
 	@Test
@@ -59,9 +58,9 @@ public class TestWorkStack
 	{
 		try
 		{
-			test.pop(Index.ONE);
-			test.pop(Index.ONE);
-			test.pop(Index.ONE);
+			test.pop(StackIndex.FIRST);
+			test.pop(StackIndex.FIRST);
+			test.pop(StackIndex.FIRST);
 		}
 		catch (Exception EmptyStackException)
 		{

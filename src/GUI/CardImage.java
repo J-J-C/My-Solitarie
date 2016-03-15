@@ -28,7 +28,7 @@ public final class CardImage {
 	private CardImage(Card pCard) {
 		
 		int pIndex = pCard.getRank().ordinal();
-		int sIndex = sufix.length-1;
+		int sIndex = pCard.getSuit().ordinal();
 		
 		this.cardImage = new ImageView();
 		String path = "/" + prefix[pIndex] + "_of_" + sufix[sIndex] +".png";
@@ -45,11 +45,19 @@ public final class CardImage {
 		int rankPosition = pCard.getRank().ordinal();
 		
 		if(CARDFACTORY[suitPosition][rankPosition] == null){
-			new CardImage(pCard);
+			CARDFACTORY[suitPosition][rankPosition] = new CardImage(pCard);
 			
 		}
 		return CARDFACTORY[suitPosition][rankPosition].cardImage; 
 		
+	}
+	
+	public static int getCardWidth(){
+		return cardWidth;
+	}
+	
+	public static int getCardLength(){
+		return cardLength;
 	}
 	
 	public static ImageView getBack(){

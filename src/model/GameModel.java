@@ -3,6 +3,7 @@ package model;
 
 
 import java.util.ArrayList;
+
 import java.util.Arrays;
 
 import java.util.List;
@@ -13,9 +14,9 @@ import move.NullMove;
 import resource.Deck;
 import resource.Card;
 import resource.Card.Rank;
-import resource.Card.Suit;
+import resource.CardView;
 //import resource.CardView;
-import strategy.DefaultStrategy;
+//import strategy.DefaultStrategy;
 import strategy.Strategy;
 
 /**
@@ -73,11 +74,11 @@ public final class GameModel
 	 */
 	public void reset()
 	{
-		aState = 0;
-		//aCardDeck.shuffle();
+		aCardDeck.shuffle();
 		aSuitStack.reset();
 		aDiscardPile = new Stack<Card>();
 		aWorkStack.initialize(aCardDeck);
+		notifyObserver();
 		//aStrategy = new DefaultStrategy();
 	}
 	
@@ -162,6 +163,7 @@ public final class GameModel
 		assert !isEmptyDeck();
 		aDiscardPile.push(aCardDeck.draw());
 		aState++;
+		notifyObserver();
 	}
 	
 
@@ -246,13 +248,13 @@ public final class GameModel
 	}
 	
 	/**
-	 * 
+	 * Return the list of card that is visible in the Index
 	 * @param pIndex index
 	 * @return card
 	 */
-	public List<Card> getVisible(StackIndex pIndex)
+	public List<CardView> getAllCards(StackIndex pIndex)
 	{
-		return aWorkStack.getVisibleCards(pIndex);
+		return aWorkStack.getCards(pIndex);
 	}
 	
 	/**
@@ -277,6 +279,13 @@ public final class GameModel
 	 */
 	public void addObserver(GameModelObserver pView){
 		this.aListener.add(pView);
+	}
+	
+	private void notifyObserver(){
+		for( GameModelObserver observer : aListener )
+		{
+			observer.stateChanged();
+		}
 	}
 	
 	/**
@@ -337,7 +346,7 @@ public final class GameModel
 		String temp = "";
 		for(StackIndex index: StackIndex.values())
 		{
-			temp += Arrays.toString(aWorkStack.getVisibleCards(index).toArray()) + "\n";
+			//temp += Arrays.toString(aWorkStack.getVisibleCards(index).toArray()) + "\n";
 		}
 		String segment = "------------------------------------";
 		string = string+temp+segment+"\n";
