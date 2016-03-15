@@ -3,19 +3,21 @@ package model;
 
 
 import java.util.ArrayList;
+
 import java.util.Arrays;
 
 import java.util.List;
 import java.util.Stack;
 
+import model.GameModel.SuitStackIndex;
 import move.Move;
 import move.NullMove;
 import resource.Deck;
 import resource.Card;
 import resource.Card.Rank;
-import resource.Card.Suit;
+import resource.CardView;
 //import resource.CardView;
-import strategy.DefaultStrategy;
+//import strategy.DefaultStrategy;
 import strategy.Strategy;
 
 /**
@@ -73,11 +75,11 @@ public final class GameModel
 	 */
 	public void reset()
 	{
-		aState = 0;
-		//aCardDeck.shuffle();
+		aCardDeck.shuffle();
 		aSuitStack.reset();
 		aDiscardPile = new Stack<Card>();
 		aWorkStack.initialize(aCardDeck);
+		notifyObserver();
 		//aStrategy = new DefaultStrategy();
 	}
 	
@@ -115,7 +117,8 @@ public final class GameModel
 	public void moveToSuitStack(Card pCard, SuitStackIndex pSuit)
 	{
 		assert canMoveToSuitStack(pCard, pSuit);
-		aSuitStack.push(pCard);
+		aSuitStack.push(pCard, pSuit);
+		notifyObserver();
 	}
 	
 	/**
@@ -162,6 +165,7 @@ public final class GameModel
 		assert !isEmptyDeck();
 		aDiscardPile.push(aCardDeck.draw());
 		aState++;
+		notifyObserver();
 	}
 	
 
@@ -185,7 +189,7 @@ public final class GameModel
 	/**
 	 * 
 	 * @param pSuit suit
-	 * @return card
+	 * @return Card
 	 */
 	public Card peekSuitStackCard(SuitStackIndex pSuit)
 	{
@@ -233,7 +237,10 @@ public final class GameModel
 	 */
 	public Card popDiscardPile()
 	{
-		return aDiscardPile.pop();
+		Card temp = aDiscardPile.pop();
+		notifyObserver();
+		System.out.println("Now the top is " + peekDiscard().toString());
+		return temp;
 		
 	}
 	
@@ -246,13 +253,13 @@ public final class GameModel
 	}
 	
 	/**
-	 * 
+	 * Return the list of card that is visible in the Index
 	 * @param pIndex index
 	 * @return card
 	 */
-	public List<Card> getVisible(StackIndex pIndex)
+	public List<CardView> getAllCards(StackIndex pIndex)
 	{
-		return aWorkStack.getVisibleCards(pIndex);
+		return aWorkStack.getCards(pIndex);
 	}
 	
 	/**
@@ -277,6 +284,13 @@ public final class GameModel
 	 */
 	public void addObserver(GameModelObserver pView){
 		this.aListener.add(pView);
+	}
+	
+	private void notifyObserver(){
+		for( GameModelObserver observer : aListener )
+		{
+			observer.stateChanged();
+		}
 	}
 	
 	/**
@@ -337,7 +351,7 @@ public final class GameModel
 		String temp = "";
 		for(StackIndex index: StackIndex.values())
 		{
-			temp += Arrays.toString(aWorkStack.getVisibleCards(index).toArray()) + "\n";
+			//temp += Arrays.toString(aWorkStack.getVisibleCards(index).toArray()) + "\n";
 		}
 		String segment = "------------------------------------";
 		string = string+temp+segment+"\n";
@@ -356,6 +370,11 @@ public final class GameModel
 		
 		String seal = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
 		return seal+string + a + "cumlative moves " + aState + "\n"+ seal;
+	}
+
+	public boolean isEmptySuitStack(SuitStackIndex aIndex) {
+		
+		return aSuitStack.isEmpty(aIndex);
 	}
 }
 	

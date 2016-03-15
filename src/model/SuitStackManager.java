@@ -65,9 +65,9 @@ public class SuitStackManager
 	/**
 	 * @param pCard card to push
 	 */
-	public void push(Card pCard) 
+	public void push(Card pCard, SuitStackIndex pIndex) 
 	{
-		this.aManager.get(pCard.getSuit()).push(pCard);
+		this.aManager.get(pIndex).push(pCard);
 		this.aScore++;
 	
 	}

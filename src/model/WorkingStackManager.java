@@ -1,8 +1,7 @@
 package model;
 
 import java.util.ArrayList;
-
-
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
@@ -128,18 +127,15 @@ public class WorkingStackManager
 	 * @param pIndex a
 	 * @return List of visible card of the specific index stack
 	 */
-	public List<Card> getVisibleCards(StackIndex pIndex)
+	public List<CardView> getCards(StackIndex pIndex)
 	{
 		Stack<CardView> target = workingManager.get(pIndex);
 		Stack<CardView> temp = new Stack<>();
-		ArrayList<Card> visibleCards = new ArrayList<>();
+		ArrayList<CardView> cards = new ArrayList<>();
 		while(!target.isEmpty())
 		{
 			CardView card = target.pop();
-			if(card.isVisible())
-			{
-				visibleCards.add(card.getCard());
-			}
+			cards.add(card);
 			temp.push(card);
 		}
 		while(!temp.isEmpty())
@@ -147,9 +143,13 @@ public class WorkingStackManager
 			CardView aa = temp.pop();
 			workingManager.get(pIndex).push(aa);
 		}
-		return visibleCards;
+		Collections.reverse(cards);
+		return cards;
 		
 	}
+
+
+	
 
 	
 

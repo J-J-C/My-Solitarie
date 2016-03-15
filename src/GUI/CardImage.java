@@ -4,6 +4,8 @@ package GUI;
 
 
 
+import java.util.HashMap;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import resource.Card;
@@ -14,7 +16,8 @@ import resource.Card.Suit;
  * @author JiajunChen
  *
  */
-public final class CardImage {
+public final class CardImage 
+{
 	
 	private final static String[] prefix = {"ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"};
 	private final static String[] sufix = {"clubs", "diamonds", "spades", "hearts"};
@@ -22,13 +25,15 @@ public final class CardImage {
 	private final static int cardLength = 140;
 	
 	private static final CardImage[][] CARDFACTORY = new CardImage[Suit.values().length][Rank.values().length];
+	private static final HashMap<String,ImageView> table = new HashMap<>();
 	
 	private final ImageView cardImage;
 
-	private CardImage(Card pCard) {
+	private CardImage(Card pCard) 
+	{
 		
 		int pIndex = pCard.getRank().ordinal();
-		int sIndex = sufix.length-1;
+		int sIndex = pCard.getSuit().ordinal();
 		
 		this.cardImage = new ImageView();
 		String path = "/" + prefix[pIndex] + "_of_" + sufix[sIndex] +".png";
@@ -40,19 +45,39 @@ public final class CardImage {
         cardImage.setCache(true);	
 	}
 	
-	public static ImageView getImage(Card pCard){
+	public static ImageView getImage(Card pCard)
+	{
 		int suitPosition = pCard.getSuit().ordinal();
 		int rankPosition = pCard.getRank().ordinal();
 		
-		if(CARDFACTORY[suitPosition][rankPosition] == null){
-			new CardImage(pCard);
-			
+		if(CARDFACTORY[suitPosition][rankPosition] == null)
+		{
+			CARDFACTORY[suitPosition][rankPosition] = new CardImage(pCard);
+			table.put(pCard.toString(), CARDFACTORY[suitPosition][rankPosition].cardImage);
 		}
 		return CARDFACTORY[suitPosition][rankPosition].cardImage; 
-		
 	}
 	
-	public static ImageView getBack(){
+	// methods overload
+	public static ImageView getImage(String pString)
+	{
+		return table.get(pString); 
+	}
+	
+	
+	
+	public static int getCardWidth()
+	{
+		return cardWidth;
+	}
+	
+	public static int getCardLength()
+	{
+		return cardLength;
+	}
+	
+	public static ImageView getBack()
+	{
 		
 		ImageView back = new ImageView();
 		Image backView = new Image("/b.gif");
@@ -64,6 +89,11 @@ public final class CardImage {
 		back.setSmooth(true);
 		back.setCache(true);	
 		return back;
-		
 	}
+	
+	public String getId(Card pCard)
+	{
+		return pCard.toString();
+	}
+	
 }

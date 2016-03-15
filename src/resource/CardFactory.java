@@ -20,7 +20,7 @@ public class CardFactory
 	 * @param pSuit suit of the card
 	 * @return the card
 	 */
-	public Card getCard(Rank pRank, Suit pSuit)
+	public static Card getCard(Rank pRank, Suit pSuit)
 	{
 		int rankIndex = pRank.ordinal();
 		int suitIndex = pSuit.ordinal();
@@ -29,6 +29,20 @@ public class CardFactory
 			CARDFACTORY[suitIndex][rankIndex] = new Card(pRank, pSuit);
 		}
 		return CARDFACTORY[suitIndex][rankIndex];
+	}
+	
+	public static Card getCard(String pString){
+		Card temp = null;
+		for(Card[] cards :CARDFACTORY){
+			for(Card aCard: cards){
+				if(aCard.toString().equals(pString)){
+					temp = aCard;
+					break;
+				}
+			}
+		}
+		return temp;
+		
 	}
 
 }
