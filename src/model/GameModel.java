@@ -4,17 +4,17 @@ package model;
 
 import java.util.ArrayList;
 
-import java.util.Arrays;
+
 
 import java.util.List;
 import java.util.Stack;
 
-import model.GameModel.SuitStackIndex;
 import move.Move;
 import move.NullMove;
 import resource.Deck;
 import resource.Card;
 import resource.Card.Rank;
+import resource.Card.Suit;
 import resource.CardView;
 //import resource.CardView;
 //import strategy.DefaultStrategy;
@@ -40,6 +40,7 @@ public final class GameModel
 	//private Strategy aStrategy = new DefaultStrategy();
 	private Stack<Move> moveStack = new Stack<>();
 	private ArrayList<GameModelObserver> aListener = new ArrayList<>();
+	@SuppressWarnings("unused")
 	private int aState = 0;
 
 	private GameModel(){}
@@ -69,6 +70,14 @@ public final class GameModel
 		FIRST, SECOND, THIRD, FOURTH;
 	}
 	
+	/**
+	 * @return an instance of the GameModel class
+	 */
+	
+	public static GameModel getInstance()
+	{
+		return ENGINE;
+	}
 	
 	/**
 	 * reset the game.
@@ -83,15 +92,6 @@ public final class GameModel
 		//aStrategy = new DefaultStrategy();
 	}
 	
-	/**
-	 * Set to play strategy for the GameModel.
-	 * Used for autoplay.
-	 * @param pStrategy
-	 */
-	public void setStrategy(Strategy pStrategy)
-	{
-		//this.aStrategy = pStrategy;
-	}
 	/**
 	 * check is a move to suit stack is valid or not
 	 * 
@@ -117,7 +117,24 @@ public final class GameModel
 	public void moveToSuitStack(Card pCard, SuitStackIndex pSuit)
 	{
 		assert canMoveToSuitStack(pCard, pSuit);
+		
+		// move the card out from its source.
+		Index a = findCardIndex(pCard);
+		if(a.getClass().equals(CardSources.class)){
+			popDiscardPile();
+		}else{
+			popCard(a);
+			if(a.getClass() == StackIndex.class){
+				if(!isEmptyWorkStack((StackIndex) a)){
+					peekWorkStackCard((StackIndex) a);
+				}
+			}
+		}
+		
+		// add the card to the target.
 		aSuitStack.push(pCard, pSuit);
+		
+		// notify observers
 		notifyObserver();
 	}
 	
@@ -140,23 +157,58 @@ public final class GameModel
 		else
 		{
 			Card fromIndex = aWorkStack.peek(destination);
-			return Math.abs(pCard.getSuit().ordinal()-fromIndex.getSuit().ordinal()) == 1 && 
-					pCard.getRank().ordinal() - fromIndex.getRank().ordinal() == -1;
+			if(pCard.getRank().ordinal() - fromIndex.getRank().ordinal() == -1){
+				if(pCard.getSuit() == Suit.DIAMONDS || pCard.getSuit() == Suit.HEARTS){
+					return fromIndex.getSuit() == Suit.CLUBS || fromIndex.getSuit() == Suit.SPADES;
+				}else{
+					return fromIndex.getSuit() == Suit.DIAMONDS || fromIndex.getSuit() == Suit.HEARTS;
+				}
+			}else{
+				return false;
+			}
 		}
 		
 	}
 	
 	/**
-	 * 
+	 * Move the card to specified index.
 	 * @param pCard card
 	 * @param pIndex index
 	 */
 	public void moveToWorkStack(Card pCard, StackIndex pIndex)
 	{
 		assert canMoveToWorkStack(pCard, pIndex);
-		aWorkStack.push(pCard, pIndex);
+		// move the card out from its source.
+		Index a = findCardIndex(pCard);
+		
+		if(a.getClass().equals(CardSources.class)){
+			popDiscardPile();
+			aWorkStack.push(pCard, pIndex);
+		}else if(a.getClass().equals(SuitStackIndex.class)){
+			popCard(a);
+			aWorkStack.push(pCard, pIndex);
+		}else{
+			
+			Card[] tail = seriesCard(pCard);
+			
+			for(Card aCard: tail){
+				if(aCard == null){
+					break;
+				}
+				if(!isEmptyWorkStack((StackIndex) a)){
+					popCard(a);				
+				}
+				if(!isEmptyWorkStack((StackIndex) a)){
+					peekWorkStackCard((StackIndex) a);
+				}
+				aWorkStack.push(aCard, pIndex);
+			}
+		}
+		// notify observers
+		notifyObserver();
+		
 	}
-	
+		
 	/**
 	 * discard a card from the deck.
 	 */
@@ -179,11 +231,34 @@ public final class GameModel
 	}
 	
 	/**
+	 * check if discard pile is empty
 	 * @return discard pile status
 	 */
 	public boolean isEmptyDiscardPile()
 	{
 		return aDiscardPile.isEmpty();
+	}
+	
+	/**
+	 * check if current suit stack is empty
+	 * @param SuitStackIndex 
+	 * @return if current Suit Stack is Empty
+	 */
+	
+	public boolean isEmptySuitStack(SuitStackIndex aIndex) {
+		
+		return aSuitStack.isEmpty(aIndex);
+	}
+	
+	/**
+	 * check if current work stack is empty
+	 * @param WorkStack Index
+	 * @return if current Work Stack is empty
+	 */
+	
+	public boolean isEmptyWorkStack(StackIndex aIndex) {
+		
+		return aWorkStack.isEmpty(aIndex);
 	}
 	
 	/**
@@ -213,12 +288,15 @@ public final class GameModel
 	public Card popCard(Index pIndex)
 	{
 		if(pIndex.getClass().equals(StackIndex.class)){
-			return aWorkStack.pop((StackIndex) pIndex);
+			if(!isEmptyWorkStack((StackIndex) pIndex)){
+				return aWorkStack.pop((StackIndex) pIndex);
+			}
 		}else if(pIndex.getClass().equals(SuitStackIndex.class)){
 			return aSuitStack.pop((SuitStackIndex) pIndex);
 		}else{
 			return null;
 		}
+		return null;
 		
 	}
 	
@@ -239,7 +317,6 @@ public final class GameModel
 	{
 		Card temp = aDiscardPile.pop();
 		notifyObserver();
-		System.out.println("Now the top is " + peekDiscard().toString());
 		return temp;
 		
 	}
@@ -270,28 +347,85 @@ public final class GameModel
 		return aSuitStack.getScore();
 	}
 	
+
 	/**
-	 * @return an instance of the GameModel class
+	 * Set to play strategy for the GameModel.
+	 * Used for autoplay.
+	 * @param pStrategy
 	 */
-	
-	public static GameModel getInstance()
+	public void setStrategy(Strategy pStrategy)
 	{
-		return ENGINE;
+		//this.aStrategy = pStrategy;
 	}
 	
 	/**
-	 * 
+	 * Add GUI component to the Game Model.
 	 */
 	public void addObserver(GameModelObserver pView){
 		this.aListener.add(pView);
 	}
 	
+	/**
+	 * Notify the GUI of the program.
+	 */
 	private void notifyObserver(){
 		for( GameModelObserver observer : aListener )
 		{
 			observer.stateChanged();
 		}
 	}
+	
+	/** 
+	 * Find the original location of the card
+	 * @param Card pCard
+	 * @return Index aIndex
+	 */
+	private Index findCardIndex(Card pCard){
+		
+		
+		if(!isEmptyDiscardPile() && peekDiscard() == pCard){
+			return CardSources.DISCARD_PILE;
+		}
+		
+		for(StackIndex aIndex: StackIndex.values()){
+			for(CardView aView: getAllCards(aIndex)){
+				if(aView.getCard() == pCard){
+					return aIndex;
+				}
+			}
+		}
+		for(SuitStackIndex aIndex: SuitStackIndex.values()){
+			if(peekSuitStackCard(aIndex) == pCard){
+				return aIndex;
+			}
+		}
+		return null;
+	}
+	
+	private Card[] seriesCard(Card pCard){
+		Card[] tail = new Card[52];
+		Index location = findCardIndex(pCard);
+		int pointer = 0;
+		boolean found = false;
+		if(location.getClass() == StackIndex.class){
+			StackIndex aIndex = (StackIndex) location;
+			if(pCard == peekWorkStackCard(aIndex)){
+				tail[pointer] = pCard;
+			}else{
+				for(CardView cardView: getAllCards(aIndex)){
+					if(cardView.getCard() == pCard || found){
+						tail[pointer] = cardView.getCard();
+						pointer++;
+						found = true;
+					}
+				}
+			}
+			return tail;
+		}
+		return null;
+	}
+	
+	
 	
 	/**
 	 * autoplay game.
@@ -330,52 +464,6 @@ public final class GameModel
 		
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	@Override
-	public String toString()
-	{
-		String string = "";
-		String workStack = "Working Stack Status";
-	//	String suitStack = "Suit Stack Status";
-	//	String discard = "Discard Pile Status";
-		
-		string = workStack +"\n";
-		String temp = "";
-		for(StackIndex index: StackIndex.values())
-		{
-			//temp += Arrays.toString(aWorkStack.getVisibleCards(index).toArray()) + "\n";
-		}
-		String segment = "------------------------------------";
-		string = string+temp+segment+"\n";
-		String a = "Suit Stack Status \n";
-		for(SuitStackIndex suit:SuitStackIndex.values())
-		{
-			if(!aSuitStack.isEmpty(suit))
-			{
-				a += aSuitStack.peek(suit).toString()+"  "+suit.toString()+"\n";
-			}
-			else
-			{
-				a += "empty "+suit.toString()+"\n";
-			}
-		}
-		
-		String seal = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
-		return seal+string + a + "cumlative moves " + aState + "\n"+ seal;
-	}
-
-	public boolean isEmptySuitStack(SuitStackIndex aIndex) {
-		
-		return aSuitStack.isEmpty(aIndex);
-	}
 }
 	
 	

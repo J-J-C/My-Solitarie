@@ -18,9 +18,9 @@ public class DiscardPileView extends HBox implements GameModelObserver{
 	public DiscardPileView(){
 		// set up the GUI of the discard pile
 		// will add drag handler later
-		ImageView card = CardImage.getBack();
-		card.setVisible(false);
-		getChildren().add(card);
+		ImageView nullImage = new ImageView();
+		
+		getChildren().add(nullImage);
     	GameModel.getInstance().addObserver(this);
 
 	}
@@ -31,7 +31,8 @@ public class DiscardPileView extends HBox implements GameModelObserver{
 	public void stateChanged() {
 		
 		if(GameModel.getInstance().isEmptyDiscardPile()){
-			this.getChildren().get(0).setVisible(false);
+			
+			this.getChildren().removeAll(getChildren());
 		}else{
 			Card aCard = GameModel.getInstance().peekDiscard();
 			ImageView cardImage = CardImage.getImage(aCard);
@@ -40,35 +41,32 @@ public class DiscardPileView extends HBox implements GameModelObserver{
 				@Override
 				public void handle(MouseEvent event) {
 					
-					System.out.println("drag");
 					ClipboardContent content = new ClipboardContent();
 		            content.putString(aCard.toString());
-		            System.out.println(content.getString());
 		            Dragboard db = cardImage.startDragAndDrop(TransferMode.ANY);
 		            db.setDragView(new Image("/drag.png"), 7, 7); 
 		            db.setContent(content); 
 		            
 		            event.consume();
 				}
-	    	});
-			
+	    	});	
 			cardImage.setOnDragDone(new EventHandler<DragEvent>(){
 
 				@Override
 				public void handle(DragEvent event) {
-					// TODO Auto-generated method stub
-					 /* the drag-and-drop gesture ended */
-					
-	                System.out.println("onDragDone");
 	                
 	                event.consume();
 				}
 				
 			});
 			
+			if(this.getChildren().size() == 0){
+				this.getChildren().add(cardImage);
+			}else{
+				this.getChildren().set(0, cardImage);
+				this.getChildren().get(0).setVisible(true);
+			}
 			
-			this.getChildren().set(0, cardImage);
-			this.getChildren().get(0).setVisible(true);
 		}	
 	}
 }

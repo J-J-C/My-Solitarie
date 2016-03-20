@@ -2,11 +2,9 @@ package model;
 
 import java.util.HashMap;
 
-import java.util.Stack;
 
+import java.util.Stack;
 import resource.Card;
-import resource.Card.Rank;
-import resource.Card.Suit;
 import model.GameModel.SuitStackIndex;
 /**
  * COMP 303 My own SolitaireGame
@@ -31,6 +29,7 @@ public class SuitStackManager
 	
 	// using a Hashtable to manage those stack
 	private final HashMap<SuitStackIndex, Stack<Card>> aManager = new HashMap<>();
+	@SuppressWarnings("unused")
 	private int aScore;
 	
 	/**

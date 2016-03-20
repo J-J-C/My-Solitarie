@@ -17,20 +17,15 @@ import model.GameModel.StackIndex;
  *
  */
 public class WorkingStackManager 
-{
-	/**
-	 * 
-	 * @author JiajunChen
-	 *
-	 */
-	
+{	
 	private static HashMap<StackIndex, Stack<CardView>> workingManager = new HashMap<>();
-	
-	
+		
 	/**
 	 * Constructor .
 	 */
-	public WorkingStackManager(){}
+	public WorkingStackManager(){
+		this.reset();
+	}
 	
 	
 	/**
@@ -70,6 +65,7 @@ public class WorkingStackManager
 	public Card peek(StackIndex pIndex)
 	{
 		assert !this.isEmpty(pIndex);
+		workingManager.get(pIndex).peek().setVisible(true);
 		return workingManager.get(pIndex).peek().getCard();
 	}
 	
@@ -101,26 +97,6 @@ public class WorkingStackManager
 	{
 		return workingManager.get(destination).isEmpty();
 	}
-	
-	/**
-	 * @return if the loading is complete remove at this point
-	 */
-	
-	// kinda unnecessary
-	public boolean isCompelete()
-	{
-		int x = 1;
-		for(Stack<CardView> workingStack : workingManager.values())
-		{
-			if(workingStack.size() != x)
-			{
-				return false;
-			}
-			x++;
-		}
-		return true;
-	}
-	
 	
 	/**
 	 * 

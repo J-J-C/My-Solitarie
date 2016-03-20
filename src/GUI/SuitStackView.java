@@ -7,23 +7,18 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.HBox;
+
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import model.GameModel;
 import model.GameModel.SuitStackIndex;
 import model.GameModelObserver;
 import resource.Card;
-import resource.Card.Rank;
-import resource.Card.Suit;
 import resource.CardFactory;
 
 public class SuitStackView extends StackPane implements GameModelObserver
@@ -64,12 +59,18 @@ public class SuitStackView extends StackPane implements GameModelObserver
 	{
 		if( GameModel.getInstance().isEmptySuitStack(aIndex))
 		{
-			getChildren().set(0, CardImage.getBack());
+			getChildren().removeAll(getChildren());
+			ImageView back = CardImage.getBack();
+			registerDragExited(back);
+			registerDragEntered(back);
+			registerDragOver(back);
+			registerDropEvent(back);
+			getChildren().add(back);
+			
 		}
 		else
 		{
 			getChildren().get(0).setVisible(true);
-			System.out.println("updated");
 			ImageView topCard = CardImage.getImage(GameModel.getInstance().peekSuitStackCard(aIndex));
 			if(topCard != (ImageView) this.getChildren().get(this.getChildren().size()-1))
 			{
@@ -94,10 +95,8 @@ public class SuitStackView extends StackPane implements GameModelObserver
 
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("drag");
 				ClipboardContent content = new ClipboardContent();
 	            content.putString(GameModel.getInstance().peekSuitStackCard(aIndex).toString());
-	            System.out.println(content.getString());
 	            Dragboard db = pImageView.startDragAndDrop(TransferMode.ANY);
 	            db.setDragView(new Image("/drag.png"), 7, 7); 
 	            db.setContent(content); 
@@ -113,7 +112,6 @@ public class SuitStackView extends StackPane implements GameModelObserver
 
 			@Override
 			public void handle(DragEvent event) {
-				System.out.println("DragOver");
 				if (event.getGestureSource() != pImageView && event.getDragboard().hasString()) {
                     /* allow for both copying and moving, whatever user chooses */
 					if(GameModel.getInstance().canMoveToSuitStack(CardFactory.getCard(event.getDragboard().getString()), aIndex)){
@@ -131,13 +129,9 @@ public class SuitStackView extends StackPane implements GameModelObserver
 		pImageView.setOnDragEntered(new EventHandler <DragEvent>(){
 
 			@Override
-			public void handle(DragEvent event) {
-				System.out.println("DragEnter");
-				
+			public void handle(DragEvent event) {				
 				event.consume();
-				
 			}
-			
 		});
 	}
 	
@@ -146,7 +140,6 @@ public class SuitStackView extends StackPane implements GameModelObserver
 
 			@Override
 			public void handle(DragEvent event) {
-				System.out.println("DragExited");
 				event.consume();
 			}
 			
@@ -158,10 +151,8 @@ public class SuitStackView extends StackPane implements GameModelObserver
 
 			@Override
 			public void handle(DragEvent event) {
-				System.out.println("DragDone");
 				event.consume();
 			}
-			
 		});
 	}
 	
@@ -174,18 +165,12 @@ public class SuitStackView extends StackPane implements GameModelObserver
 			@Override
 			public void handle(DragEvent event) {
 				// TODO Auto-generated method stub
-				System.out.println("Prepare to Drop");
 				Dragboard a = event.getDragboard();
 				boolean success = false;
 				if(a.hasString()){
-					System.out.println(GameModel.getInstance().isEmptySuitStack(aIndex));
-					ImageView cardImage = CardImage.getImage(a.getString());
 					Card aCard = CardFactory.getCard(a.getString());
-					System.out.println(aCard.toString());
-					GameModel.getInstance().popDiscardPile();
 					GameModel.getInstance().moveToSuitStack(aCard, aIndex);
 					success = true;
-					System.out.println("aaaa");
     			}
     			event.setDropCompleted(success);
     			event.consume();

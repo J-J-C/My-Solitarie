@@ -4,6 +4,7 @@ package move;
 
 import model.GameModel;
 
+
 import model.GameModel.Index;
 import model.GameModel.SuitStackIndex;
 import resource.Card;
@@ -11,7 +12,9 @@ import resource.Card;
 public class SuitStackMove implements Move{
 	private Card target;
 	private SuitStackIndex destination; 
+	@SuppressWarnings("unused")
 	private Index origin;
+	@SuppressWarnings("unused")
 	private boolean fromDiscard = false;
 	
 	public SuitStackMove(Card pCard, SuitStackIndex pDestination, Index pOrigin){

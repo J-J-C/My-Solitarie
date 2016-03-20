@@ -1,9 +1,9 @@
 package test;
 
 import java.lang.annotation.Annotation;
+
 import java.lang.reflect.*;
-import org.junit.Test;
-import jdk.internal.org.objectweb.asm.tree.analysis.Analyzer;
+
 import resource.Card;
 import resource.Card.Rank;
 import resource.Card.Suit;
@@ -19,7 +19,6 @@ public class Check {
 		
 		
 		// reflection practice
-		Class a = Class.forName("resource.Card");
 		Card card = new Card(Rank.ACE,Suit.DIAMONDS);
 		System.out.println(card.toString());
 		Field b = card.getClass().getDeclaredField("aSuit");
@@ -36,7 +35,7 @@ public class Check {
 	
 	private static int numberOfTestMethod(String pName) throws ClassNotFoundException{
 		
-		Class c = Class.forName(pName);
+		Class<?> c = Class.forName(pName);
 		int count = 0;
 		for (Method m : c.getMethods()) {
 			if (m.isAnnotationPresent(org.junit.Test.class)) {

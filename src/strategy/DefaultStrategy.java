@@ -2,11 +2,11 @@ package strategy;
 
 import java.util.ArrayList;
 
+
 import java.util.List;
 
 import move.*;
 import model.GameModel;
-import model.WorkingStackManager.Index;
 
 public class DefaultStrategy implements Strategy{
 
@@ -44,12 +44,12 @@ public class DefaultStrategy implements Strategy{
 		ArrayList<Move> moves = new ArrayList<>();
 		if(!pEngine.isEmptyDiscardPile())
 		{
-			if(pEngine.canMoveToSuitStack(pEngine.peekDiscard(),pEngine.peekDiscard().getSuit()))
-			{
-				SuitStackMove aMove = new SuitStackMove(pEngine.peekDiscard(), null);
-				aMove.isFromDiscard();
-				moves.add(aMove);
-			}
+//			if(pEngine.canMoveToSuitStack(pEngine.peekDiscard(),pEngine.peekDiscard().getSuit()))
+//			{
+//				SuitStackMove aMove = new SuitStackMove(pEngine.peekDiscard(), null);
+//				aMove.isFromDiscard();
+//				moves.add(aMove);
+//			}
 		}
 		return moves;
 	}
@@ -57,13 +57,13 @@ public class DefaultStrategy implements Strategy{
 	private List<Move> fromWorkStackToSuitStack(GameModel pEngine)
 	{
 		ArrayList<Move> moves = new ArrayList<>();
-		for(Index index: Index.values())
-		{
-			if(pEngine.canMoveToSuitStack(pEngine.peekWorkStackCard(index), pEngine.peekWorkStackCard(index).getSuit()))
-			{
-				moves.add( new SuitStackMove(pEngine.peekWorkStackCard(index), index) );
-			}
-		}
+//		for(Index index: Index.values())
+//		{
+//			if(pEngine.canMoveToSuitStack(pEngine.peekWorkStackCard(index), pEngine.peekWorkStackCard(index).getSuit()))
+//			{
+//				moves.add( new SuitStackMove(pEngine.peekWorkStackCard(index), index) );
+//			}
+//		}
 		return moves;
 	}
 
