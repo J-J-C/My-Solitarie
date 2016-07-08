@@ -13,6 +13,7 @@ import resource.Card.Suit;
  */
 public final class CardImage 
 {
+	
 	private final static String[] prefix = {"ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"};
 	private final static String[] sufix = {"clubs", "diamonds", "spades", "hearts"};
 	private final static int cardWidth = 80;
