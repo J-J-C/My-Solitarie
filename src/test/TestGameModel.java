@@ -24,8 +24,7 @@ package test;
 //import resource.*;
 
 public class TestGameModel {
-	
-	
+
 //	@Before
 //	public void setUp() throws Exception
 //	{
@@ -155,7 +154,6 @@ public class TestGameModel {
 //		GameModel.getInstance().autoPlay();
 //		assertEquals(new Card(Rank.TWO,Suit.CLUBS), GameModel.getInstance().peekSuitStackCard(Suit.CLUBS));	
 //	}
-	
-	
+
 
 }

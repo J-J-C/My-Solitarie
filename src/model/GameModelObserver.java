@@ -1,7 +1,7 @@
 package model;
 
 public interface GameModelObserver {
-	
-	public void stateChanged();
-	
+
+  public void stateChanged();
+
 }

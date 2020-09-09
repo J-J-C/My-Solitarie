@@ -1,38 +1,35 @@
 package move;
 
 
-
 import model.GameModel;
-
-
 import model.GameModel.Index;
 import model.GameModel.SuitStackIndex;
 import resource.Card;
 
-public class SuitStackMove implements Move{
-	private Card target;
-	private SuitStackIndex destination; 
-	@SuppressWarnings("unused")
-	private Index origin;
-	@SuppressWarnings("unused")
-	private boolean fromDiscard = false;
-	
-	public SuitStackMove(Card pCard, SuitStackIndex pDestination, Index pOrigin){
-		this.target = pCard;
-		this.destination = pDestination;
-		this.origin = pOrigin;
-	}
-	
-	@Override
-	public void perform(GameModel pModel) {
-		assert pModel.canMoveToSuitStack(target, destination);
-		pModel.moveToSuitStack(target, destination);
-	}
+public class SuitStackMove implements Move {
 
-	@Override
-	public void undo(GameModel pModel){
-		
-		
-	}
+  private Card target;
+  private SuitStackIndex destination;
+  @SuppressWarnings("unused")
+  private Index origin;
+  @SuppressWarnings("unused")
+  private boolean fromDiscard = false;
+
+  public SuitStackMove(Card pCard, SuitStackIndex pDestination, Index pOrigin) {
+    this.target = pCard;
+    this.destination = pDestination;
+    this.origin = pOrigin;
+  }
+
+  @Override
+  public void perform(GameModel pModel) {
+    assert pModel.canMoveToSuitStack(target, destination);
+    pModel.moveToSuitStack(target, destination);
+  }
+
+  @Override
+  public void undo(GameModel pModel) {
+
+  }
 
 }
